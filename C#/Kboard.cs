@@ -119,7 +119,7 @@ namespace KBoard
             Print($"{title}");                                      // print title
             for (int i = 0; i < textLines.Count; i++)
             {
-                if (i < 9)  Print($"     {i + 1}) {textLines[i]}");  // print menu options 5 spaces
+                if (i < 10) Print($"     {i + 1}) {textLines[i]}");  // print menu options 5 spaces
                 else        Print($"    {i + 1}) {textLines[i]}");   // print menu options 4 spaces
             }
             Print(new string('═', Console.WindowWidth - 1));
