@@ -120,7 +120,7 @@ def menu(title:str, menu_list:list, row = -1) -> int:
 			
 	return get_integer(f"Type the number of your choice (1 to {len(menu_list)})", 1, len(menu_list), rows) - 1 # -1 to return correct list index
 
-def error_message(row, error_type, user_input, min_value = 0, max_value = 0):
+def error_message(row:int, error_type:str, user_input:str, min_value:float = 0, max_value:float = 0) -> None:
 	''' display error message. If row number supplied overwrite with delay '''
 	
 	message = "Just pressing the Enter key or spacebar doesn't work" # default for "noinput"
@@ -149,16 +149,16 @@ def error_message(row, error_type, user_input, min_value = 0, max_value = 0):
 		time.sleep(delay)
 		clear_input_field(row)
 
-def set_cursor_pos(row, col):
+def set_cursor_pos(row:int, col:int) -> None:
 	''' Sets the cursor position '''
 	print(f"\033[{row};{col}H", end = '')
 	
-def clear_input_field(row):
+def clear_input_field(row:int) -> None:
 	if row >= 0:
 		set_cursor_pos(row, 0)
 		print(blank)
 		set_cursor_pos(row, 0)
 		
-def sleep(s):
+def sleep(s:float) -> None:
 	time.sleep(s)
 	
