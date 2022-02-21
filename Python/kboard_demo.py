@@ -1,4 +1,3 @@
-'''  This file needs kboard.py: https://pastebin.com/UceAJsaV '''
 import lib.console as console
 import lib.kboard as kb # shortens the class name to kb
 
