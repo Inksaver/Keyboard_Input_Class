@@ -206,7 +206,7 @@ function Kboard.menu(title, list, row)
 	local index = 1
 	print(title)
 	for _, item in ipairs(list) do
-		if index < 9 then
+		if index < 10 then
 			print("     "..index..") "..item)
 		else
 			print("    "..index..") "..item)
