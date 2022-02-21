@@ -1,7 +1,7 @@
 import lib.console as console
 import lib.kboard as kb # shortens the class name to kb
 
-def get_row(row, rows = 1):
+def get_row(row:int, rows:int = 1) -> int:
 	''' If running from an IDE, row should always be -1
 	so no set_cursor_pos is used in Kboard library.
 	Otherwise increment row by rows
@@ -11,7 +11,7 @@ def get_row(row, rows = 1):
 	else:
 		return row + rows	
 
-def main():
+def main() -> None:
 	''' Everything runs from here '''
 	console.clear()
 	row = -1					# assume running in IDE
