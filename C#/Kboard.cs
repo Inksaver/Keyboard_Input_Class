@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
@@ -114,7 +114,7 @@ namespace KBoard
             /// displays a menu using the text in 'title', and a list of menu items (string)
             /// This menu will re-draw until user enters correct data
             int rows = -1;
-            if (row >= 0) rows = row + textLines.Count + 1;
+            if (row >= 0) rows = row + textLines.Count + 2;
 
             Print($"{title}");                                      // print title
             for (int i = 0; i < textLines.Count; i++)
@@ -122,10 +122,11 @@ namespace KBoard
                 if (i < 9)  Print($"     {i + 1}) {textLines[i]}");  // print menu options 5 spaces
                 else        Print($"    {i + 1}) {textLines[i]}");   // print menu options 4 spaces
             }
+            Print(new string('═', Console.WindowWidth - 1));
             int userInput = GetInteger($"Type the number of your choice (1 to {textLines.Count})",  1, textLines.Count, rows);
             return userInput - 1;
         }
-        public static int Print(string text)
+        public static int Print(string text = "")
         {
             Console.WriteLine(text);
             return 1;
