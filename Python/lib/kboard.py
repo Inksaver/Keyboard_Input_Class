@@ -110,14 +110,15 @@ def menu(title:str, menu_list:list, row = -1) -> int:
 	''' displays a menu using the text in 'title', and a list of menu items (string) '''
 	rows = -1
 	if row >= 0:
-		rows = row + len(menu_list) + 1	
+		rows = row + len(menu_list) + 2	
 	print(title)
 	for i in range(len(menu_list)):
 		if i < 9:
 			print(f"     {i+1}) {menu_list[i]}")
 		else:
 			print(f"    {i+1}) {menu_list[i]}") 
-			
+	print("".ljust(80,"═"))
+		
 	return get_integer(f"Type the number of your choice (1 to {len(menu_list)})", 1, len(menu_list), rows) - 1 # -1 to return correct list index
 
 def error_message(row:int, error_type:str, user_input:str, min_value:float = 0, max_value:float = 0) -> None:
