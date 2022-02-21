@@ -3,8 +3,6 @@ local Kboard = {}
 local blank = string.rep(" ", 79)
 local delay = 2
 
-
-
 local function trim(s)
 	--[[ trim leading and trailing spaces ]]
 	return (s:gsub("^%s*(.-)%s*$", "%1"))
@@ -203,7 +201,7 @@ function Kboard.menu(title, list, row)
 	row = row or -1
 	local rows  = -1
 	if row >= 0 then
-		rows = row + #list + 1
+		rows = row + #list + 2
 	end
 	local index = 1
 	print(title)
@@ -215,6 +213,7 @@ function Kboard.menu(title, list, row)
 		end
 		index = index + 1
 	end
+	print(string.rep("═", 80))
 	return Kboard.getInteger("Type the number of your choice (1 to "..index-1 ..")", 1, #list, rows)
 end
 	
