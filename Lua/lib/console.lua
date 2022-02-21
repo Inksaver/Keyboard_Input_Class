@@ -212,8 +212,6 @@ function Console.Resize(windowWidth, windowHeight, clear)
 	--[[ resize console / terminal ]]
 	if clear == nil then clear = true end
 	if Console.IsConsole then
-		--Console.WindowWidth = windowWidth
-		--Console.WindowHeight = windowHeight
 		if Console.OSName == 'nt' then
 			os.execute("mode "..windowWidth..","..windowHeight)
 		else
