@@ -1,4 +1,16 @@
--- Kboard static class returns string, integer, boolean and menu choices
+--[[
+kboard static class returns string, integer, float, boolean and menu choices.
+Use:
+
+row = Kboard.Clear();
+name = Kboard.GetString("What is your name?", true, 1, 10, row);
+age = Kboard.GetInteger("How old are you", 5, 110, row);
+height = Kboard.GetRealNumber("How tall are you?", 0.5, 2.0, row);
+likesPython = Kboard.GetBoolean("Do you like C#? (y/n)", row);
+
+options = {"Brilliant", "Not bad", "Could do better", "Rubbish"};
+choice = Kboard.Menu("What do think of this utility?", options, row)
+]]
 local Kboard = {}
 local blank = string.rep(" ", 79)
 local delay = 2
@@ -24,12 +36,15 @@ local function tchelper(first, rest)
    return first:upper()..rest:lower()
 end
 
+--[[  These local functions are private, not called directly from other files ]]
+
 local function setCursorPos(row, col)
 	--[[ position cursor in terminal at row, col ]]
 	io.write(string.char(27).."["..row..";"..col.."H")
 end
 
 local function clearInputField(row)
+	--[[ use setCursorPos to delete a line of text ]]
 	if row >= 0 then
 		setCursorPos(row, 0)
 		print(blank)
@@ -38,6 +53,7 @@ local function clearInputField(row)
 end
 
 local function errorMessage(row, errorType, userInput, minValue, maxValue)
+	--[[ Display error message to the user for <delay> seconds ]]
 	minValue = minValue or 0
 	maxValue = maxValue or 0
 	local message = "Just pressing the Enter key or spacebar doesn't work" -- default for "noinput"
@@ -70,7 +86,7 @@ local function errorMessage(row, errorType, userInput, minValue, maxValue)
 end
 
 local function processInput(prompt, minValue, maxValue, dataType, row)
-	--[[  This function is private, not called directly from other files ]]
+	--[[ validate input, raise error messages until input is valid ]]
 	local validInput = false
 	local userInput
 	while not validInput do
@@ -126,7 +142,8 @@ local function processInput(prompt, minValue, maxValue, dataType, row)
 	return userInput
 end
 
-function Kboard.getString(prompt, withTitle, minValue, maxValue, row) -- withTitle, minInt and maxInt are given defaults if not passed
+function Kboard.getString(prompt, withTitle, minValue, maxValue, row) 
+	--[[ Return a string. withTitle, minValue and maxValue are given defaults if not passed ]]
 	withTitle = withTitle or false
 	minValue = minValue or 1
 	maxValue = maxValue or 20
@@ -156,7 +173,8 @@ function Kboard.getString(prompt, withTitle, minValue, maxValue, row) -- withTit
 	return userInput
 end
 
-function Kboard.getFloat(prompt, minValue, maxValue, row) -- minInt and maxInt are given defaults if not passed
+function Kboard.getFloat(prompt, minValue, maxValue, row) 
+	--[[ Return a real number. minValue and maxValue are given defaults if not passed ]]
 	minValue = minValue or 0
 	maxValue = maxValue or 1000000.0
 	row = row or -1
@@ -167,7 +185,8 @@ function Kboard.getFloat(prompt, minValue, maxValue, row) -- minInt and maxInt a
 	return processInput(prompt, minValue, maxValue, "float", row)
 end
 
-function Kboard.getInteger(prompt, minValue, maxValue, row) -- minInt and maxInt are given defaults if not passed
+function Kboard.getInteger(prompt, minValue, maxValue, row) 
+	--[[ Return an integer. minValue and maxValue are given defaults if not passed ]]
 	minValue = minValue or 0
 	maxValue = maxValue or 65536
 	row = row or -1
@@ -178,7 +197,8 @@ function Kboard.getInteger(prompt, minValue, maxValue, row) -- minInt and maxInt
 	return processInput(prompt, minValue, maxValue, "int", row)
 end
 		
-function Kboard.getBoolean(prompt, row) -- assumes yes/no type entries from user
+function Kboard.getBoolean(prompt, row)
+	--[[ Return a boolean. Based on y(es)/ n(o) response ]]
 	row = row or -1
 	if row >= 0 then
 		row = row + 1	
@@ -186,8 +206,22 @@ function Kboard.getBoolean(prompt, row) -- assumes yes/no type entries from user
 	return processInput(prompt, 1, 3, "bool", row)
 end
 	
-function Kboard.toTitle(Text) --converts any string to Title Case
+function Kboard.toTitle(Text) 
+	--[[ converts any string to Title Case ]]
 	return Text:gsub("(%a)([%w_']*)", tchelper)
+end
+
+function Kboard.PadRight(text, length, char)
+	--[[
+	Pads string to length len with chars from right
+	test = Console.PadRight("test", 10, "+") -> "test++++++"]]
+	if char == nil then char = ' ' end
+	local padding = ''
+	local textlength = text:Utf8len()
+	for i = 1, length - textlength do
+		padding = padding..char
+	end
+	return text..padding
 end
 
 function Kboard.sleep(s) 
@@ -196,25 +230,74 @@ function Kboard.sleep(s)
     while (os.clock() < sec) do end 
 end
 
-function Kboard.menu(title, list, row)
+function Kboard.menu(title, list, row, windowWidth)
 	--[[ displays a menu using the text in 'title', and a list of menu items (string) ]]
 	row = row or -1
+	windowWidth = windowWidth or 80
+	
+	if title:len() % 2 == 1 then
+		title = title.." "
+	end
+	
 	local rows  = -1
 	if row >= 0 then
-		rows = row + #list + 2
+		rows = row + #list + 4
 	end
+	
+	local maxLen = title:len()
+	for _, line in pairs(list) do
+		if line:len() + 9 > maxLen then
+			maxLen = line:len() + 9
+		end
+	end
+	
+	maxLen = maxLen + 30
+	if maxLen > windowWidth - 2 then
+		maxLen = windowWidth - 2
+	end
+	if maxLen % 2 == 1 then
+		maxLen = maxLen + 1
+	end
+	
+	local filler = string.rep(" ", (maxLen - title:len()) / 2 - 1)
+	
 	local index = 1
-	print(title)
+	print("╔"..string.rep("═", maxLen - 2).."╗")
+	print("║"..filler..title..filler.."║")
+	print("╠"..string.rep("═", maxLen - 2).."╣")
 	for _, item in ipairs(list) do
 		if index < 10 then
-			print("     "..index..") "..item)
+			print("║    "..index..") "..item:PadRight(maxLen - 9, " ").."║")
 		else
-			print("    "..index..") "..item)
+			print("║   "..index..") "..item:PadRight(maxLen - 8, " ").."║")
 		end
 		index = index + 1
 	end
-	print(string.rep("═", 80))
+	print("╚"..string.rep("═", maxLen - 2).."╝")
 	return Kboard.getInteger("Type the number of your choice (1 to "..index-1 ..")", 1, #list, rows)
 end
+
+function Kboard.Utf8length(str)
+	--[[ # or .len counts the bytes of a string, so gives incorrect length of UTF8 chars
+		 use: local length = text:utf8len() 
+	]]
+	local asciiLength = 0
+	local utf8length = 0
+	for i = 1, #str do
+		if string.byte(str:sub(i,i)) < 128 then
+			asciiLength = asciiLength + 1
+		else
+			utf8length = utf8length + 1
+		end
+	end
+	if utf8length > 0 then -- only 3 byte chars used in this script
+		utf8length = utf8length / 3
+	end
+	
+	return asciiLength + utf8length
+end
+
+string.PadRight = Kboard.PadRight	-- if using as library: string.PadRight = Kboard.PadRight 
+string.Utf8len = Kboard.Utf8length 	-- if using as library: string.Utf8length = Kboard.Utf8length 
 	
 return Kboard
