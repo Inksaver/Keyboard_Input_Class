@@ -1,32 +1,21 @@
+/*
+kboard static class returns string, integer, float, boolean and menu choices.
+Use:
+
+int row = Kboard.Clear();
+string name = Kboard.GetString("What is your name?", true, 1, 10, row);
+int age = Kboard.GetInteger("How old are you", 5, 110, row);
+double height = Kboard.GetRealNumber("How tall are you?", 0.5, 2.0, row);
+bool likesPython = Kboard.GetBoolean("Do you like C#? (y/n)", row);
+
+List<string> options = new List<string> {"Brilliant", "Not bad", "Could do better", "Rubbish"};
+int choice =Kboard.Menu("What do think of this utility?", options, row)
+*/
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
-
-/// <summary> 
-/*
-int row = Kboard.Clear();
-string name = Kboard.GetString(prompt: "What is your name?", withTitle: true, min: 1, max: 10, row: row);
-row += 2; // keep track of current line. User pressing Enter on Input increases line count
-Kboard.Print($"Hello {name}");
-int age = Kboard.GetInteger("How old are you", 5, 110, row);
-row += 2;
-Kboard.Print($"You are {age} years old");
-double height = Kboard.GetRealNumber("How tall are you?", 0.5, 2.0, row);
-Kboard.Print($"You are {height} metres tall");
-row += 2;
-bool likesPython = Kboard.GetBoolean("Do you like Python? (y/n)", row);
-if (likesPython)
-    Kboard.Print($"You DO like Python");
-else
-    Kboard.Print($"You DO NOT like Python");
-string title = "Choose your favourite language";
-row += 2;
-List<string> options = new List<string> { "C#", "Python", "Lua", "Java" };
-int choice = Kboard.Menu(title, options, row);
-Kboard.Print($"Your favourite language is {options[choice]}");
-*/
-/// </summary>
 
 namespace KBoard
 {
@@ -41,6 +30,7 @@ namespace KBoard
         }
         private static void ClearInputField(int row)
         {
+            /// use SetCursorPos to delete a line of text ///
             if (row >= 0)
             {
                 Console.SetCursorPosition(0, row); // left, top 0 based
@@ -50,7 +40,7 @@ namespace KBoard
         }
         private static void ErrorMessage(int row, string errorType, string userInput,  double minValue = 0, double maxValue = 0)
         {
-            //row--;
+            /// Display error message to the user for <delay> seconds ///
             if (row < 0) row = 0;
             string message = "Just pressing the Enter key or spacebar doesn't work"; // default for "noinput"
             if (errorType == "string")
@@ -105,7 +95,7 @@ namespace KBoard
         }
         public static string Input(string prompt, string ending = "_")
         {
-            /// Get keyboard input from user (requires Enter )
+            /// Get keyboard input from user (requires Enter) same as Python ///
             Console.Write($"{prompt}{ending}");
             return Console.ReadLine();
         }
@@ -113,31 +103,51 @@ namespace KBoard
         {
             /// displays a menu using the text in 'title', and a list of menu items (string)
             /// This menu will re-draw until user enters correct data
+            if (title.Length % 2 == 1) title += " ";
             int rows = -1;
-            if (row >= 0) rows = row + textLines.Count + 2;
+            if (row >= 0) rows = row + textLines.Count + 4;
+            int maxLen = title.Length;
+            foreach(string line in textLines)
+            {
+                if(line.Length > maxLen + 9)
+                    maxLen = line.Length + 9;
+            }
+            maxLen += 28;
+            if (maxLen > Console.WindowWidth - 2)
+                maxLen = Console.WindowWidth - 2;
+            if (maxLen % 2 == 1)
+                maxLen++;
 
-            Print($"{title}");                                      // print title
+            string filler = new string(' ', (maxLen - title.Length) / 2);
+            Print($"╔{new string('═', maxLen)}╗");
+            Print($"║{filler}{title}{filler}║");                     // print title
+            Print($"╠{new string('═', maxLen)}╣");
             for (int i = 0; i < textLines.Count; i++)
             {
-                if (i < 10) Print($"     {i + 1}) {textLines[i]}");  // print menu options 5 spaces
-                else        Print($"    {i + 1}) {textLines[i]}");   // print menu options 4 spaces
+                if (i < 9)  Print($"║     {i + 1}) {textLines[i].PadRight(maxLen - 8)}║");  // print menu options 5 spaces
+                else        Print($"║    {i + 1}) {textLines[i].PadRight(maxLen - 8)}║");   // print menu options 4 spaces
             }
-            Print(new string('═', Console.WindowWidth - 1));
+            //Print(new string('═', Console.WindowWidth - 1));
+            Print($"╚{new string('═', maxLen)}╝");
             int userInput = GetInteger($"Type the number of your choice (1 to {textLines.Count})",  1, textLines.Count, rows);
             return userInput - 1;
         }
         public static int Print(string text = "")
         {
+            /// Replicates Python / Lua print() and returns no of lines printed ///
             Console.WriteLine(text);
-            return 1;
+            int numLines = text.Count(x => x == '\n') + 1;
+            return numLines;
         }
         public static void Sleep(int delay)
         {
+            /// replicates Python time.sleep() in seconds ///
             if (delay < 100) delay *= 1000;
             Thread.Sleep(delay);
         }
         private static string ProcessInput(string prompt, double min, double max, string dataType, int row)
         {
+            /// validate input, raise error messages until input is valid  ///
             bool valid = false;
             string userInput = "";
             while (!valid)
