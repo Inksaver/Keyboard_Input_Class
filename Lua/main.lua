@@ -42,10 +42,11 @@ function testKboard()
 	print("User likes Python : "..tostring(likesPython))
 	kb.sleep(2)					-- pause 2 secs
 	
+	
 	row = Console.Clear()		-- resets row to -1 / 0
 	local title = "What do think of this utility?"
 	local options = {"Brilliant", "Not bad", "Could do better", "Rubbish"}
-	local choice = kb.menu(title, options, row)
+	local choice = kb.menu(title, options, row, Console.WindowWidth)
 	print("User thinks this utility is : "..options[choice])
 end
 
