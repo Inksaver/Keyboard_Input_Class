@@ -7,9 +7,9 @@ namespace KBoard
         static void Main(string[] args)
         {
             int row = Kboard.Clear();   // row 0
+            
             string name = Kboard.GetString(prompt:"What is your name?", withTitle:true, min:1, max:10, row:row);
             Kboard.Print($"User name : {name} <- See how I used a capital letter!");
-
             row += 2;                   // row 2
             int age = Kboard.GetInteger("How old are you?", 5, 110, row);
             Kboard.Print($"User age : {age} years old");
