@@ -14,9 +14,10 @@ def get_row(row:int, rows:int = 1) -> int:
 def main() -> None:
 	''' Everything runs from here '''
 	console.clear()
-	row = -1					# assume running in IDE
-	if console.is_console:		# running in console / terminal
-		row = 0					# start row at 0
+	window_width = console.window_width	# actual size or 80
+	row = -1							# assume running in IDE
+	if console.is_console:				# running in console / terminal
+		row = 0							# start row at 0
 		
 	user_name = kb.get_string("Type your name", True, 3, 6, row) 			# returns user input in Title Case
 	print(f"User name : {user_name} <- see how I used a capital letter!")
@@ -37,7 +38,7 @@ def main() -> None:
 	row = console.clear()		# resets row to -1 / 0
 	title = "What do think of this utility?"
 	menu_list = ["Brilliant", "Not bad", "Could do better", "Rubbish"]
-	user_choice = kb.menu(title, menu_list, row)
+	user_choice = kb.menu(title, menu_list, row, window_width)
 	print(f"User thinks this utility is : {menu_list[user_choice]}")
 	
 	if console.is_console:
