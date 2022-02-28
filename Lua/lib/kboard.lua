@@ -98,8 +98,8 @@ local function processInput(prompt, minValue, maxValue, dataType, row)
 			if string.len(userInput) == 0 and minValue > 0 then
 				errorMessage(row, "noinput", output)
 			else
-				if string.len(userInput) > maxValue then
-					errorMessage(row, "string", output)
+				if string.len(userInput) < minValue or string.len(userInput) > maxValue then
+					errorMessage(row, "string", output, minValue, maxValue)
 				else
 					validInput = true
 				end
@@ -117,6 +117,7 @@ local function processInput(prompt, minValue, maxValue, dataType, row)
 						validInput = true
 					else
 						errorMessage(row, "bool", output)
+						
 					end
 				else
 					if dataType == "int" or dataType == "float" then
@@ -151,25 +152,10 @@ function Kboard.getString(prompt, withTitle, minValue, maxValue, row)
 	if row >= 0 then
 		row = row + 1
 	end
-	local valid = false
-	local userInput
-	while not valid do
-		io.write(prompt.."_")
-		userInput = io.read():trim()
-		if string.len(userInput) == 0 then
-			errorMessage(row, "noinput")
-		else		
-			if string.len(userInput) >= minValue and string.len(userInput) <= maxValue then
-				if withTitle then
-					userInput = Kboard.toTitle(userInput)
-				end
-				valid = true
-			else
-				errorMessage(row, "string", minValue, maxValue)
-			end
-		end
+	local userInput = processInput(prompt, minValue, maxValue, "string", row)
+	if withTitle then
+		userInput = Kboard.toTitle(userInput)
 	end
-	
 	return userInput
 end
 
