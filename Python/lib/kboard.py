@@ -40,8 +40,8 @@ def process_input(prompt:str, min_value:int, max_value:int, data_type:str, row) 
 		if data_type == "string":							# string requested
 			if len(user_input) == 0 and min_value > 0:		# enter pressed when min characters > 0
 				error_message(row, "noinput", output)
-			elif len(user_input) > max_value:
-				error_message(row, "string", output)
+			elif len(user_input) > max_value or len(user_input) < min_value:
+				error_message(row, "string", output,  min_value, max_value)
 			else:
 				valid_input = True							# string or "" allowed
 		else:												# bool, int or float requested
@@ -131,7 +131,7 @@ def menu(title:str, menu_list:list, row = -1, window_width = 80) -> int:
 	if row >= 0:
 		rows = row + len(menu_list) + 4
 		
-	max_len = get_max_len(title, menu_list)
+	max_len = get_max_len(title, menu_list, window_width)
 	
 	filler = "".ljust((max_len - len(title)) // 2) 	# calculate "    " filler spacing
 	print(f"╔{''.ljust(max_len,'═')}╗")				# draw top bar
@@ -189,4 +189,3 @@ def clear_input_field(row:int) -> None:
 def sleep(s:float) -> None:
 	''' public method '''
 	time.sleep(s)
-	
