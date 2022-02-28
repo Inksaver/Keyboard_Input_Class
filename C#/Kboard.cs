@@ -157,7 +157,7 @@ namespace KBoard
                 if (dataType == "string")
                 {
                     if (userInput.Length == 0 && min > 0) ErrorMessage(row, "noinput", userInput);
-                    else if (userInput.Length > max) ErrorMessage(row, "string", userInput, min, max);
+                    else if (userInput.Length < min || userInput.Length > max) ErrorMessage(row, "string", userInput, min, max);
                     else valid = true;
                 }
                 else //integer, float, bool
